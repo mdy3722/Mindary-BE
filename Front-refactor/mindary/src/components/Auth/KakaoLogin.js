@@ -53,11 +53,20 @@ const KakaoLogin = () => {
   };
 
   useEffect(() => {
+    const storedAccessToken = localStorage.getItem("access_token");
+  
+    // 이미 로그인된 상태면 로그인 로직 실행 막기
+    if (storedAccessToken) {
+      console.log("이미 로그인 상태입니다. 자동 로그인 차단.");
+      navigate("/mindary"); // 홈이나 메인 페이지로 우회
+      return;
+    }
+  
     if (code && !calledRef.current) {
-      calledRef.current = true; // ✅ 중복 실행 방지
+      calledRef.current = true;
       handleLogin();
     }
-  }, [code]);
+  }, [code])
 
   return (
     <div>

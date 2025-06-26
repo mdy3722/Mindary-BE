@@ -7,7 +7,6 @@ import { downloadFile } from "./DownloadFile";
 const MonthResult = ({ selectedDate }) => {
   const formattedDate = moment(selectedDate).format("YYYY-MM-DD");
   const [image_url, setImage_URL] = useState();
-  const fullImageUrl = `http://127.0.0.1:8000${image_url}`;
 
   const getMonthResult = async () => {
     try {
@@ -19,23 +18,27 @@ const MonthResult = ({ selectedDate }) => {
           },
         }
       );
-      // ✨ 여기서 204(No Content) 응답 처리
+  
       if (response.status === 204) {
         alert("지난달 작성한 글이 없어 결산 이미지를 생성할 수 없습니다!");
         return;
       }
-
-      const imageUrl = response.data.image_url;
-      setImage_URL(imageUrl);
   
-      if (imageUrl) {
-        const fullImageUrl = `http://127.0.0.1:8000${imageUrl}`;
-        downloadFile(fullImageUrl, "월말 결산.png");
+      const imageUrl = response.data.image_url;
+      if (!imageUrl) {
+        alert("이미지 URL이 존재하지 않습니다.");
+        return;
       }
+  
+      const fullImageUrl = `http://127.0.0.1:8000${imageUrl}`;
+      await downloadFile(fullImageUrl, "월말 결산.png"); // ✅ 이것만 호출
+  
     } catch (error) {
-      console.error("Error fetching URL: ", error);
+      alert("이미지 생성 또는 확인에 실패했습니다.");
+      console.error("Error: ", error);
     }
   };
+  
   
 
   return (

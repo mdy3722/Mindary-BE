@@ -104,6 +104,19 @@ DATABASES = {
     }
 }
 
+# RDS 설정정
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': os.environ.get('DB_NAME'),
+#         'USER': os.environ.get('DB_USER'),
+#         'PASSWORD': os.environ.get('DB_PASSWORD'),
+#         'HOST': os.environ.get('DB_HOST'),
+#         'PORT': os.environ.get('DB_PORT'),
+#     }
+# }
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -164,9 +177,9 @@ CORS_ALLOWED_ORIGINS = [
 # SMTP 서버 설정 (다양한 이메일 서비스 제공업체의 SMTP 서버 설정)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # SMTP 서버 주소
-EMAIL_PORT = 587  # SMTP 포트 (보통 587 또는 465)
-EMAIL_USE_TLS = True  # TLS 사용 여부 (보통 True)
-EMAIL_USE_SSL = False  # SSL 사용 여부 (보통 False)
+EMAIL_PORT = 587  # SMTP 포트 (587 또는 465)
+EMAIL_USE_TLS = True  # TLS 사용 여부
+EMAIL_USE_SSL = False  # SSL 사용 여부 
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 

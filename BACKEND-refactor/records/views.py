@@ -227,7 +227,7 @@ def get_wordcloud(request):
 
     image_path = os.path.join(settings.MEDIA_ROOT, image_name)
 
-    # 🔥 파일이 없으면 생성
+    # 파일이 없으면 생성
     if not os.path.exists(image_path):
         if ver == 'month':
             return make_month_wordcloud(request)
@@ -248,8 +248,11 @@ def get_wordcloud_archive(request):
     
     # "%Y%m" 형식으로 변환
     next_month_str = next_month_date.strftime('%Y%m')
-
     image_name = next_month_str + "_month.png"
+    image_path = os.path.join(settings.MEDIA_ROOT, image_name)
+
+    if not os.path.exists(image_path):
+        return Response({"message": "이미지가 존재하지 않습니다."}, status=404)
 
     image_url = settings.MEDIA_URL + image_name
     return Response({"image_url": image_url})

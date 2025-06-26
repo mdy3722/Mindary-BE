@@ -43,6 +43,10 @@ const Navbar1 = ({ selectedDate }) => {
       console.error("로그아웃 중 오류 발생:", error);
       alert("로그아웃 중 오류가 발생했습니다.");
     }
+    finally {
+      localStorage.clear();         // 모든 토큰 제거
+      window.location.href = "/";  // 강제 새로고침 → Landing 페이지 진입 시 상태 초기화됨
+    }
   };
 
   const handleNavigate = (path) => {

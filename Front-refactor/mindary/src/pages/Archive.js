@@ -5,12 +5,11 @@ import Navbar from "../components/Navbar/Navbar1";
 import Header from "../components/Header/Header";
 import { useTheme } from "../styles/ThemeContext";
 import DefaultExcel from "../components/Background/DefaultExcel";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import moment from "moment-timezone";
 import SelectInput from "../components/Archieve/SelectInput";
 import { axiosInstance } from "../api/api";
-import { useEffect } from "react";
 import DetailModal from "../components/Archieve/DetailModal";
 import { downloadFile } from "../components/Record/DownloadFile";
 
@@ -23,19 +22,19 @@ const Archive = () => {
   const urlDate = queryParams.get("date");
   const initialDate = urlDate
     ? moment.tz(urlDate, "Asia/Seoul").toDate()
-    : new Date(); // Fallback to current date if no date in URL
+    : new Date();
 
   const [selectedDate, setSelectedDate] = useState(() => {
     const date = new Date();
-    date.setMonth(date.getMonth() - 1); // Last month
+    date.setMonth(date.getMonth() - 1);
     return date;
   });
   const [subtitle, setSubtitle] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10); // Items per page for category results
+  const [itemsPerPage] = useState(10);
   const [keywordResults, setKeywordResults] = useState([]);
-  const [searchKeyword, setSearchKeyword] = useState(""); // 검색 키워드 상태 추가
-  const [keywordItemsPerPage] = useState(5); // Items per page for keyword results
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [keywordItemsPerPage] = useState(5);
   const [categoryResults, setCategoryResults] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("일상");
@@ -61,7 +60,6 @@ const Archive = () => {
     1
   );
 
-  // Pagination for keyword results
   const [currentKeywordPage, setCurrentKeywordPage] = useState(1);
   const indexOfLastKeywordItem = currentKeywordPage * keywordItemsPerPage;
   const indexOfFirstKeywordItem = indexOfLastKeywordItem - keywordItemsPerPage;
@@ -80,6 +78,7 @@ const Archive = () => {
       setCurrentPage(pageNumber);
     }
   };
+
   const openModal = (itemId) => {
     setSelectedItemId(itemId);
     setIsModalOpen(true);
@@ -89,8 +88,6 @@ const Archive = () => {
     setIsModalOpen(false);
     setSelectedItemId(null);
   };
-
-  // 키워드 검색
 
   const handleSearchInputChange = (event) => {
     setSearchKeyword(event.target.value);
@@ -104,7 +101,7 @@ const Archive = () => {
   };
 
   const handleKeywordSearch = async (event) => {
-    if (event) event.preventDefault(); // 폼 제출 방지
+    if (event) event.preventDefault();
     try {
       const response = await axiosInstance.get(
         `mindary/records/archive?keyword=${searchKeyword}&order_by=desc`,
@@ -115,20 +112,18 @@ const Archive = () => {
         }
       );
       setKeywordResults(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error("Error fetching keyword results:", error);
     }
   };
+
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       handleKeywordSearch();
     }
   };
 
-  // 카테고리 검색
   const handleCategoryChange = (selectedValue) => {
-    console.log("Selected Category:", selectedValue);
     setSelectedCategory(selectedValue);
   };
 
@@ -145,7 +140,6 @@ const Archive = () => {
             }
           );
           setCategoryResults(response.data);
-          console.log(response.data);
         } catch (error) {
           console.error("Error fetching category results:", error);
         }
@@ -161,12 +155,8 @@ const Archive = () => {
     }
   }, [location.search]);
 
-  //날짜 입력 검색
-  // 버튼 클릭 시 선택한 날짜 받아오고 넘겨줌
-
   const [summaryImageUrl, setSummaryImageUrl] = useState();
   const yearMonth = `${selectedDate.getFullYear()}${("0" + (selectedDate.getMonth() + 1)).slice(-2)}`;
-
   const fullImageUrl = `http://127.0.0.1:8000${imageurl}`;
 
   const getMonthlySummaryImage = async (yearMonth) => {
@@ -186,22 +176,18 @@ const Archive = () => {
   };
 
   useEffect(() => {
-    // 월말결산 이미지 가져오기
     const fetchSummaryImage = async () => {
       await getMonthlySummaryImage(yearMonth);
     };
     fetchSummaryImage();
-
     setSubtitle(`${selectedDate.getMonth() + 1}월의 월말결산`);
   }, [selectedDate]);
 
   const handleDateChange = (event) => {
     const { name, value } = event.target;
     const numericValue = parseInt(value, 10);
-
     setSelectedDate((prevDate) => {
       const newDate = new Date(prevDate);
-
       if (name === "year") {
         if (!isNaN(numericValue) && numericValue > 0) {
           newDate.setFullYear(numericValue);
@@ -214,9 +200,12 @@ const Archive = () => {
       return newDate;
     });
   };
+
   const handleDownloadButtonClick = () => {
     if (imageurl) {
       downloadFile(fullImageUrl, "월말 결산.png");
+    } else {
+      alert("지난달 결산을 하지 않아 이미지를 찾을 수 없습니다.");
     }
   };
 

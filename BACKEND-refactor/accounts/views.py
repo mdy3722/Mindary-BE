@@ -11,6 +11,7 @@ from django.shortcuts import render
 from rest_framework import status
 from dotenv import load_dotenv
 load_dotenv()
+from mindary.settings import EMAIL_HOST_PASSWORD
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -39,14 +40,14 @@ logger = logging.getLogger('django')
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def kakao_login(request):
-    print("🟡 [kakao_login] 진입")
+    #print("🟡 [kakao_login] 진입")
     serializer = KakaoLoginSerializer(data=request.data)
     if not serializer.is_valid():
         print("❌ [kakao_login] 시리얼라이저 오류:", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     code = serializer.validated_data['access_code']
-    print("✅ 프론트에서 받은 code:", code)  # ✅ 여기에 출력
+    #print("✅ 프론트에서 받은 code:", code)  # ✅ 여기에 출력
 
     token_response = requests.post(
         'https://kauth.kakao.com/oauth/token',
@@ -59,7 +60,7 @@ def kakao_login(request):
         },
     )
 
-    print("🔁 카카오로 access_token 요청 결과:", token_response.text)  # ✅ 여기에 출력
+    print("카카오로 access_token 요청 결과:", token_response.text)  # ✅ 여기에 출력
 
     if token_response.status_code != 200:
         return Response({'detail': 'Access token 요청 실패'}, status=token_response.status_code)
@@ -74,8 +75,8 @@ def kakao_login(request):
         }
     ).json()
 
-    print("🧾 user_info 전체 응답:", user_info)
-    print("👉 user_info.get('id'):", user_info.get("id"))
+    print("user_info 전체 응답:", user_info)
+    print("user_info.get('id'):", user_info.get("id"))
 
 
     kakao_id = user_info.get("id")
@@ -155,7 +156,7 @@ def send_new_password(email, new_password):
 def send_code(email, code):
     subject = '마인더리(mindary) 인증코드 안내 이메일입니다.'
     message = f'안녕하세요. 마인더리(mindary)입니다. \n 인증코드를 확인해주세요. \n {code} \n 인증코드는 이메일 발송 시점부터 3분동안 유효합니다.'
-    email_from = 'mdy3722@gmail.com'
+    email_from = EMAIL_HOST_PASSWORD
     recipient_list = [email]
 
     send_mail(subject, message, email_from, recipient_list)
@@ -172,7 +173,7 @@ def send_verification_code(request):
             return Response({'error': '이미 존재하는 회원입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         code = f"{random.randint(1000, 9999)}"
-        expires_at = timezone.now() + timedelta(minutes=5)
+        expires_at = timezone.now() + timedelta(minutes=3)
         EmailVerification.objects.create(email=email, code=code, expires_at=expires_at)
 
         send_code(email, code)
@@ -191,7 +192,8 @@ def verify_code(request):
         try:
             verification = EmailVerification.objects.get(email=email, code=code)
             if verification.is_expired():
-                return Response({'error': 'Verification code expired.'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': 'Verification code expired.'},
+                                status=status.HTTP_400_BAD_REQUEST)
             verification.delete()
             return Response({'message': 'Verification code is valid.'}, status=status.HTTP_200_OK)
         except EmailVerification.DoesNotExist:
@@ -237,7 +239,6 @@ def original_login(request):
 
 @csrf_exempt
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def original_logout(request):
     try:
         refresh_token = request.data.get('refresh_token')
@@ -270,7 +271,7 @@ def reset_password(request):
 
 
 """
-      < 토큰 갱신 > - 아직 url 및 연결 X
+      < 토큰 갱신 >
 """
 # 토큰 갱신 -> refresh를 request로 보내면 access 토큰을 새로 발급해줌
 @api_view(['POST'])
