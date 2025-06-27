@@ -38,19 +38,23 @@
 
 ---
 
-## 🖥 서비스 UI 예시
+### 서비스 UI 예시
 
-📸 **UI 화면 (엑셀 기반 감정 기록)**  
-> `docs/ui-record-daily.png`  
-![ui-record-daily](./docs/ui-record-daily.png)
+<details>
+  <summary>서비스 UI</summary>
 
-📸 **카테고리 기반 긴 글 작성 & 캘린더 연동**  
-> `docs/ui-record-categorized.png`  
-![ui-record-categorized](./docs/ui-record-categorized.png)
+  ![랜딩 페이지 - 블랙 버전](./docs/landing page UI black.png)
+  ![랜딩 페이지 - 그린 버전](./docs/landing page UI.png)
+  ![로그인 화면](./docs/로그인 화면.png)
+  ![(일반 로그인 유저)회원가입 페이지](./docs/일반 로그인 회원가입 페이지.png)
+  ![새 비밀번호 생성](./docs/새 비밀번호 생성.png)
+  ![채팅 모드](./docs/채팅 모드.png)
+  ![긴글 모드](./docs/긴글 목록.png)
+  ![긴글 작성](./docs/긴글 작성하기.png)
+  ![아카이브 ui](.docs/아카이브 ui.png)
+  
 
-📸 **기록 검색 및 결산 확인 (Archive 탭)**  
-> `docs/ui-archive.png`  
-![ui-archive](./docs/ui-archive.png)
+</details>
 
 ---
 
