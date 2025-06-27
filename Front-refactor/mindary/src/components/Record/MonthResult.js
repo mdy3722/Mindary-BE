@@ -30,8 +30,8 @@ const MonthResult = ({ selectedDate }) => {
         return;
       }
   
-      const fullImageUrl = `http://127.0.0.1:8000${imageUrl}`;
-      await downloadFile(fullImageUrl, "월말 결산.png"); // ✅ 이것만 호출
+      const fullImageUrl = `http://127.0.0.1:8000${image_url}`;
+      await downloadFile(fullImageUrl, "월말 결산.png"); 
   
     } catch (error) {
       alert("이미지 생성 또는 확인에 실패했습니다.");

@@ -4,16 +4,17 @@ from rest_framework.response import Response
 from rest_framework import status
 from records.models import Record
 from records.serializers import RecordSerializer
-from datetime import datetime, date, timedelta
-from dateutil.relativedelta import relativedelta
+from datetime import datetime, timedelta
 from django.utils.timezone import make_aware
 
 from django.views.decorators.csrf import csrf_exempt
 from krwordrank.word import summarize_with_keywords
 import os
 from wordcloud import WordCloud
-from reportlab.lib.pagesizes import letter
 from django.conf import settings
+
+from django.utils import timezone
+from django.utils.timezone import now
 
 
 """
@@ -144,66 +145,56 @@ def generate_wordcloud(texts):
     
     return wordcloud.to_image()
 
-# 워드 클라우드 최초 생성
+'''
+저장 파일명을 5월 내용에 대한 워드클라우드면 그대로 '5월'을 명시하는 것으로 수정함
+'''
+# 리팩토링 - 메소드 추출 (워드클라우드 정적 파일 저장 및 반환환)
+def save_wordcloud_image(user, records, filename):
+    texts = [record.content for record in records]
+
+    if not texts:
+        return Response(status=204)
+
+    wordcloud_image = generate_wordcloud(texts)
+
+    image_path = os.path.join(settings.MEDIA_ROOT, filename)
+    wordcloud_image.save(image_path)
+
+    image_url = settings.MEDIA_URL + filename
+    return Response({"image_url": image_url})
+
+# 워드 클라우드 최초 생성 - get_wordcloud()에서 기존 이미지 없을 경우 호출됨
+# 주간 결산
 def make_week_wordcloud(request):
-    now = datetime.now()
-    current_start = now.replace(hour=0, minute=0, second=0, microsecond=0)   # 월요일 00시00분00초
-    start = current_start - timedelta(days=7) # 지난 주 월요일
-    end = current_start - timedelta(seconds=1) # 지난 주 일요일
-    # 이미지 파일 이름 지정
-    image_name = now.strftime("%Y%m%d") + "_week.png"
-    
-    # 시간대를 인식하는 datetime 객체로 변환 (Django에서 사용하는 timezone aware datetime 객체)
-    range_start = make_aware(start)
-    range_end = make_aware(end)
+    now = timezone.now()
+    this_monday = now - timedelta(days=now.weekday())
+    this_monday = this_monday.replace(hour=0, minute=0, second=0, microsecond=0)
 
-    records = Record.objects.filter(writer=request.user, created_at__range=[range_start, range_end])
-    texts = [record.content for record in records]
-    
-    if not texts:
-        return Response(status=204)
-    
-    # 워드클라우드 이미지 생성
-    wordcloud_image = generate_wordcloud(texts)
-    
-    # 이미지 파일로 변환
-    image_path = os.path.join(settings.MEDIA_ROOT, image_name)
-    wordcloud_image.save(image_path)
+    last_monday = this_monday - timedelta(days=7)
+    last_sunday = this_monday - timedelta(seconds=1)
 
-    # if not os.path.exists(image_path):
-    #     print("Image file was not saved.")
-    #     return Response({"message": "Failed to save image file"}, status=500)
+    records = Record.objects.filter(
+        writer=request.user,
+        created_at__range=[last_monday, last_sunday]
+    )
 
-    image_url = settings.MEDIA_URL + image_name
-    return Response({"image_url": image_url})
+    filename = last_monday.strftime("%Y%m%d") + f"_week_{request.user.id}.png"
+    return save_wordcloud_image(request.user, records, filename)
 
+# 월간 결산
 def make_month_wordcloud(request):
-    now = datetime.now()
-    current_month_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    start = current_month_start - timedelta(seconds=1) # 지난 달 마지막 날
-    end = start.replace(day=1, hour=0, minute=0, second=0, microsecond=0) #지난 달 첫 날
-    # 이미지 파일 이름 지정
-    image_name = now.strftime("%Y%m") + "_month.png" 
-    
-    # 시간대를 인식하는 datetime 객체로 변환 (Django에서 사용하는 timezone aware datetime 객체)
-    range_start = make_aware(start)
-    range_end = make_aware(end)
+    now = timezone.now()
+    this_month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    last_month_end = this_month_start - timedelta(seconds=1)
+    last_month_start = last_month_end.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
-    records = Record.objects.filter(writer=request.user, created_at__range=[range_start, range_end])
-    texts = [record.content for record in records]
-    
-    if not texts:
-        return Response(status=204)
-    
-    # 워드클라우드 이미지 생성
-    wordcloud_image = generate_wordcloud(texts)
-    
-    # 이미지 파일로 변환
-    image_path = os.path.join(settings.MEDIA_ROOT, image_name)
-    wordcloud_image.save(image_path)
+    records = Record.objects.filter(
+        writer=request.user,
+        created_at__range=[last_month_start, last_month_end]
+    )
 
-    image_url = settings.MEDIA_URL + image_name
-    return Response({"image_url": image_url})
+    filename = last_month_start.strftime("%Y%m") + f"_month_{request.user.id}.png"
+    return save_wordcloud_image(request.user, records, filename)
 
 # 워드 클라우드 조회 함수
 # 캘린더 페이지에서 조회
@@ -211,19 +202,27 @@ def make_month_wordcloud(request):
 @permission_classes([IsAuthenticated])
 def get_wordcloud(request):
     date_query_param = request.GET.get('date', None)
-    date_obj = datetime.strptime(date_query_param, '%Y-%m-%d')
     ver = request.GET.get('wordcloud', 'week')
-    now = datetime.now()
 
-    if ver == 'month': # 지난 달 파일을 주기
-        yearmonth = date_obj.strftime('%Y%m')
-        image_name = yearmonth + "_month.png"
+    if not date_query_param:
+        return Response({"error": "날짜가 필요합니다."}, status=400)
+
+    try:
+        date_obj = datetime.strptime(date_query_param, '%Y-%m-%d')
+    except ValueError:
+        return Response({"error": "날짜 형식이 잘못되었습니다."}, status=400)
+
+    if ver == 'month': # 지난 달 파일을 주기 - 파일명도 지난달
+        last_month = date_obj.replace(day=1) - timedelta(days=1)
+        image_name = last_month.strftime('%Y%m') + f"_month_{request.user.id}.png"
         
-    else: # 해당 주 월요일 날짜 파일을 주기
+    else: # 지난 주 파일을 주기 - 파일명도 지난주 월요일 날짜
         weekday = date_obj.weekday()  
-        start_of_week = date_obj - timedelta(days=date_obj.weekday())
-        yearmonthdate = start_of_week.strftime('%Y%m%d')
-        image_name = yearmonthdate + "_week.png"
+        last_monday = (date_obj - timedelta(days=weekday + 7)).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        image_name = last_monday.strftime('%Y%m%d') + f"_week_{request.user.id}.png"
+
 
     image_path = os.path.join(settings.MEDIA_ROOT, image_name)
 
@@ -236,6 +235,7 @@ def get_wordcloud(request):
 
 
     image_url = settings.MEDIA_URL + image_name
+  
     return Response({"image_url": image_url})
 
 # 아카이브 페이지에서 조회
@@ -244,11 +244,10 @@ def get_wordcloud(request):
 def get_wordcloud_archive(request):
     date_query_param = request.GET.get('date', None)
     date_obj = datetime.strptime(date_query_param + '01', '%Y%m%d')
-    next_month_date = date_obj.replace(day=1) + timedelta(days=31)  # 31일을 더해서 다음 달의 첫 날로 이동
     
-    # "%Y%m" 형식으로 변환
-    next_month_str = next_month_date.strftime('%Y%m')
-    image_name = next_month_str + "_month.png"
+    last_month_date = date_obj.replace(day=1) - timedelta(days=1)
+    image_name = last_month_date.strftime('%Y%m') + f"_month_{request.user.id}.png"
+
     image_path = os.path.join(settings.MEDIA_ROOT, image_name)
 
     if not os.path.exists(image_path):
