@@ -99,13 +99,13 @@
 
 ## 🗂 ERD
 
-> `docs/mindary-ERD.png`
+> ![ER 다이어그램](./docs/mindary-ERD.png)
 
 ---
 
 ## 🏗 시스템 아키텍처
 
-> `docs/mindary-systemArchitecture.png`
+> ![시스템 아키텍처](./docs/mindary-systemArchitecture.png)
 
 ---
 
