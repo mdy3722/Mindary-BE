@@ -121,3 +121,57 @@ source venv/bin/activate
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
+
+---
+
+## 설정 (RDS / SMTP)
+
+### 🛢 RDS(MySQL) 연동 설정
+
+`settings.py` 내부에서 데이터베이스 설정은 다음과 같이 환경변수를 통해 구성하였습니다:
+
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
+    }
+}
+```
+
+다음으로 .env 파일에 본인의 환경에 맞게 MySQL과 RDS 정보를 주입합니다:
+```
+# MySQL (RDS) 예시
+DB_NAME=mindary
+DB_USER=admin
+DB_PASSWORD=yourpassword
+DB_HOST=mindary-db.abcdefghij.ap-northeast-2.rds.amazonaws.com
+DB_PORT=3306
+```
+
+### SMTP 설정
+- Gmail SMTP를 이용하여 이메일 인증 및 새 비밀번호 발송 기능을 구현하였습니다.
+- Gmail SMTP를 사용하는 경우, 구글 계정 보안 설정에서 **앱 비밀번호**를 발급받아야 합니다.
+`settings.py` 내부에서 SMTP 설정은 다음과 같이 환경변수를 통해 구성하였습니다:
+```
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+
+DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
+```
+.env 내용
+```
+# 📬 Gmail SMTP
+EMAIL_HOST_USER=your_email@gmail.com
+EMAIL_HOST_PASSWORD=your_app_password
+```
+
