@@ -109,28 +109,30 @@
 
 ---
 
-## ⚙️ 실행 방법
+## ⚙️ 서버 실행 방법
 
 ```bash
 git clone https://github.com/mdy3722/Mindary-Refactoring.git
-cd Mindary-Refactoring
+cd BACKEND-refactor/
 
 python -m venv venv
-source venv/bin/activate
+source venv/bin/activate (Mac) 또는 source venv/Scripts/activate (Window)
 
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
+```
 
 ---
 
-## 설정 (RDS / SMTP)
+## 🔧 설정 (RDS / SMTP)
 
-### 🛢 RDS(MySQL) 연동 설정
+이 프로젝트는 `.env` 파일을 통해 민감 정보를 관리하며, `settings.py`에서는 환경변수 기반으로 설정을 구성합니다.  
+아래는 백엔드 구동을 위한 주요 설정 예시입니다:
 
-`settings.py` 내부에서 데이터베이스 설정은 다음과 같이 환경변수를 통해 구성하였습니다:
+```
+# ▶️ RDS(MySQL) 연동 설정 (settings.py)
 
-```python
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -141,23 +143,9 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT'),
     }
 }
-```
 
-다음으로 .env 파일에 본인의 환경에 맞게 MySQL과 RDS 정보를 주입합니다:
-```
-# MySQL (RDS) 예시
-DB_NAME=mindary
-DB_USER=admin
-DB_PASSWORD=yourpassword
-DB_HOST=mindary-db.abcdefghij.ap-northeast-2.rds.amazonaws.com
-DB_PORT=3306
-```
+# ▶️ 이메일(SMTP) 인증 설정 (settings.py)
 
-### SMTP 설정
-- Gmail SMTP를 이용하여 이메일 인증 및 새 비밀번호 발송 기능을 구현하였습니다.
-- Gmail SMTP를 사용하는 경우, 구글 계정 보안 설정에서 **앱 비밀번호**를 발급받아야 합니다.
-`settings.py` 내부에서 SMTP 설정은 다음과 같이 환경변수를 통해 구성하였습니다:
-```
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -167,11 +155,21 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
 DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
-```
-.env 내용
-```
-# 📬 Gmail SMTP
+
+
+# ▶️ .env 예시
+
+# MySQL (RDS)
+DB_NAME=mindary
+DB_USER=admin
+DB_PASSWORD=yourpassword
+DB_HOST=mindary-db.abcdefghij.ap-northeast-2.rds.amazonaws.com
+DB_PORT=3306
+
+# Gmail SMTP
 EMAIL_HOST_USER=your_email@gmail.com
 EMAIL_HOST_PASSWORD=your_app_password
 ```
 
+> 🔐 `.env` 파일은 반드시 `.gitignore`에 포함되어야 하며, 실제 비밀번호나 이메일은 외부에 노출되지 않도록 주의합니다.  
+> 📬 Gmail SMTP를 사용할 경우 [앱 비밀번호](https://support.google.com/accounts/answer/185833?hl=ko) 발급이 필요합니다.
