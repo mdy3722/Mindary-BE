@@ -51,7 +51,7 @@
 
 ### 나의 역할
 - 시스템 아키텍처 및 ERD 설계, API 명세서 작성
-- Django 기반 REST API 전반 구현 (총 기여도 약 60%)
+- Django REST Framework(DRF) 기반 REST API 구현 (총 기여도 약 60%)
 - JWT 인증 시스템 구축 (SimpleJWT 활용)  
 - Gmail SMTP 연동을 통한 이메일 인증/임시 비밀번호 발송 로직 구현  
 - 긴 글 CRUD 구현
@@ -62,10 +62,10 @@
 
 ---
 
-### 🛠️ 기술 스택(백엔드)
+### 기술 스택 (백엔드)
 
-![Django](https://img.shields.io/badge/Django-3.2-green?logo=django)
-![DRF](https://img.shields.io/badge/DRF-REST_Framework-red?logo=python)
+![Django](https://img.shields.io/badge/-Django-092E20?logo=django&logoColor=white)
+![DRF](https://img.shields.io/badge/-DRF%20Framework-ff1709?logo=python&logoColor=white)
 ![MySQL](https://img.shields.io/badge/Database-MySQL-blue?logo=mysql)
 ![RDS](https://img.shields.io/badge/AWS-RDS-orange?logo=amazonaws)
 ![JWT](https://img.shields.io/badge/Auth-JWT-green?logo=jsonwebtokens)
