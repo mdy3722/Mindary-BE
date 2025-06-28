@@ -99,19 +99,13 @@
 
 ## 🗂 ERD
 
-> `docs/mindary-erd.png` ← 직접 추가 필요
-
-_(모델 예: User, EmotionRecord, WordCloudLog 등)_
+> `docs/mindary-ERD.png`
 
 ---
 
 ## 🏗 시스템 아키텍처
 
-> `docs/mindary-architecture.png` ← 직접 추가 필요
-
-- 클라이언트(React) → Nginx → Gunicorn → Django
-- Django → RDS(MySQL), SMTP(Gmail)
-- django-cron → 주기적 워드클라우드 생성 및 저장
+> `docs/mindary-systemArchitecture.png`
 
 ---
 
