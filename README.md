@@ -76,10 +76,59 @@
 
 ---
 
-### 서비스 UI 예시
+### 서비스 UI
 
 <details>
-<summary>서비스 UI 예시 보기</summary>
+<summary>서비스 UI 모아 -  (카테고리/키워드 별) 긴 글 조회
+  -  긴 글 작성 → 빈도수 기반 랭킹으로 키워드 추출 -> 주간/월간 결산(워드클라우드로 시각화)
+
+<details>
+<summary>자세한 서비스 소개 보기</summary>
+
+**Mindary**는 현대인의 정신 건강 문제에 주목해, 감정을 부담 없이 기록할 수 있도록 돕는 웹 기반 감정 다이어리 서비스입니다.  
+일상 속 스트레스를 해소하고, 기록 습관을 통해 자기 성찰의 기회를 제공하는 것이 주요 목적입니다.
+
+서비스의 UI는 **엑셀 형태를 차용**하여 직장 환경에서도 부담 없이 사용할 수 있는 감정 기록 공간을 제공합니다.  
+스트레스를 받는 순간엔 마치 카카오톡 ‘나와의 채팅’처럼 **혼잣말을 자유롭게 적어 감정을 해소**할 수 있고,  
+또는 퇴근길에 해야 할 일이나 기억해둘 메모를 남기는 용도로도 활용할 수 있습니다.
+
+긴 글 모드에선 자유로운 카테고리(일상/영화/독서 등)로 글을 작성하고, 캘린더를 통해 일별 기록을 직관적으로 확인할 수 있습니다.  
+또한, 주간/월간 결산 워드클라우드를 통해 **자주 언급된 단어들을 시각적으로 확인**하며, 최근의 감정 흐름이나 관심사를 돌아볼 수 있습니다.
+</details>
+
+---
+
+### 나의 역할
+- 시스템 아키텍처 및 ERD 설계, API 명세서 작성
+- Django REST Framework(DRF) 기반 REST API 구현 (총 기여도 약 60%)
+- JWT 인증 시스템 구축 (SimpleJWT 활용)  
+- Gmail SMTP 연동을 통한 이메일 인증/임시 비밀번호 발송 로직 구현  
+- 긴 글 CRUD 구현
+- `krwordrank` 기반 키워드 추출 및 `WordCloud` 시각화 구현  
+- `django-cron`을 활용해 주간/월간 워드클라우드 자동 생성 스케줄링 설정
+- EC2 기반 서버 배포 및 Gunicorn + Nginx 운영 환경 구성
+- AWS RDS(MySQL) 연동 및 ORM/마이그레이션 설정 구성
+
+---
+
+### 기술 스택 (백엔드)
+
+![Django](https://img.shields.io/badge/-Django-092E20?logo=django&logoColor=white)
+![DRF](https://img.shields.io/badge/-DRF%20Framework-ff1709?logo=python&logoColor=white)
+![MySQL](https://img.shields.io/badge/Database-MySQL-blue?logo=mysql)
+![RDS](https://img.shields.io/badge/AWS-RDS-orange?logo=amazonaws)
+![JWT](https://img.shields.io/badge/Auth-JWT-green?logo=jsonwebtokens)
+![SMTP](https://img.shields.io/badge/Auth-Gmail_SMTP-yellow?logo=gmail)
+![EC2](https://img.shields.io/badge/Deploy-EC2-black?logo=amazon-ec2)
+![Gunicorn](https://img.shields.io/badge/WSGI-Gunicorn-darkgreen?logo=gunicorn)
+![Nginx](https://img.shields.io/badge/Proxy-Nginx-brightgreen?logo=nginx)
+
+---
+
+### 서비스 UI
+
+<details>
+<summary>서비스 UI 모아보기</summary>
 
 - **랜딩 페이지 - 블랙 버전**  
   ![랜딩 페이지 블랙](./docs/landing%20page%20UI%20black.png)
