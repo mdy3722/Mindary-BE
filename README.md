@@ -174,14 +174,22 @@
 ### 서버 실행 방법
 
 ```bash
+# 프로젝트 클론
 git clone https://github.com/mdy3722/Mindary-Refactoring.git
 cd BACKEND-refactor/
 
+# 가상환경 생성 및 활성화
 python -m venv venv
 source venv/bin/activate (Mac) 또는 source venv/Scripts/activate (Window)
 
+# 필수 패키지 설치
 pip install -r requirements.txt
+
+# DB 초기화 및 마이그레이션
+python manage.py makemigrations
 python manage.py migrate
+
+# 서버 실행
 python manage.py runserver
 ```
 
