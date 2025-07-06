@@ -118,7 +118,7 @@
 
 ### 시스템 아키텍처
 
-> ![시스템 아키텍처](./docs/mindary-systemArchitecture.png)
+> ![시스템 아키텍처](./docs/mindary-시스템아키텍처.png)
 
 ---
 
