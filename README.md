@@ -159,15 +159,15 @@
 
 ---
 
-### ERD
-
-> ![ER 다이어그램](./docs/mindary-ERD.png)
-
----
-
 ### 시스템 아키텍처
 
 > ![시스템 아키텍처](./docs/mindary-시스템아키텍처.png)
+
+---
+
+### ERD
+
+> ![ER 다이어그램](./docs/mindary-ERD.png)
 
 ---
 
